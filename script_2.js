@@ -5,21 +5,22 @@ const sortButton = document.getElementById("sortButton");
 const counter = document.getElementById("counter");
 const menuSelection = document.getElementById("selection_option");
 const title = document.getElementById("sorting_title");
-
-let sorting_type = "bubble";
-
+const inputNumberButton = document.getElementById("InputEnterButton");
+const inputNumber = document.getElementById("InputEnter");
 
 canvas.width = 800;
 canvas.height = 400;
 
-const Npoints = 40;
-const width = (canvas.width - 100) / Npoints;
+let Npoints = 40;
+let width;
 
 let count = 0;
 let current = 0;
 let j = 1;
 let numbers = generateNumbers();
-drawGraph();
+
+let sorting_type = "bubble";
+init();
 
 function generateNumbers() {
 	swapCount = 0;
@@ -68,8 +69,6 @@ async function swap(i, j) {
 	swapCount++;
 }
 
-
-
 async function bubbleSort() {
 	let len = numbers.length;
 	let swapped;
@@ -114,20 +113,6 @@ async function insertionSort() {
 	}
 }
 
-async function mergeSort() {
-
-    if (numbers.length <= 1) {
-        return numbers;
-    }
-    let mid = Math.floor(numbers.length / 2);
-    let left = numbers.slice(0, mid);
-    let right = numbers.slice(mid);
-    return merge(await mergeSort(left), await mergeSort(right));
-}
-async function merge(left, right) {
-
-}
-
 menuSelection.onchange = function () {
 	if (menuSelection.value === "bubble") {
 		title.innerHTML = "Bubble Sort";
@@ -150,13 +135,34 @@ menuSelection.onchange = function () {
 		title.innerHTML = "Quick Sort";
 		sorting_type = "quick";
 	}
-	numbers = generateNumbers();
-	drawGraph();
+	init();
 };
+async function heapSort() {
+	let N = numbers.length;
+	for (let i = Math.floor(N / 2) - 1; i >= 0; i--) {
+		await heapify(N, i);
+	}
+	for (let i = N - 1; i > 0; i--) {
+		// Move current root to end
+		await swap(0, i);
+		// call max heapify on the reduced heap
+		await heapify(i, 0);
+	}
+}
+async function heapify(N, i) {
+	let largest = i;
+	let l = 2 * i + 1;
+	let r = 2 * i + 2;
 
+	if (l < N && numbers[largest] < numbers[l]) largest = l;
+	if (r < N && numbers[largest] < numbers[r]) largest = r;
+	if (largest != i) {
+		await swap(i, largest);
+		await heapify(N, largest);
+	}
+}
 resetButton.addEventListener("click", () => {
-	numbers = generateNumbers();
-	drawGraph();
+	init();
 });
 sortButton.addEventListener("click", () => {
 	if (sorting_type === "bubble") {
@@ -171,5 +177,14 @@ sortButton.addEventListener("click", () => {
 	if (sorting_type === "insertion") {
 		insertionSort();
 	}
+});
+function init() {
+	width = (canvas.width - 100) / Npoints;
+	numbers = generateNumbers();
+	drawGraph();
+}
+inputNumberButton.addEventListener("click", () => {
+	Npoints = inputNumber.value;
 
+	init();
 });
