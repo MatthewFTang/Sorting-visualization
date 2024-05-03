@@ -1,0 +1,13 @@
+body {
+	background-color: black;
+	color: white;
+}
+
+.card {
+	background-color: black;
+	border-radius: 3rem;
+}
+canvas {
+	display: flex;
+	margin: auto;
+}
